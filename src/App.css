@@ -1,0 +1,43 @@
+.app {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  margin: 15px;
+  justify-content: center;
+  border: 1PX solid green !important;
+}
+
+.dash-board-body {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 10px;
+  justify-content: center;
+}
+
+.board {
+  display: flexbox;
+  grid-template-columns: repeat(3, 100px);
+  justify-content: center;
+  align-items: center;
+}
+
+.board-row {
+  display: flex;
+}
+
+.square {
+  width: 100px;
+  height: 100px;
+  color: black !important;
+  font-size: 36px !important;
+  background-color: white !important;
+  border: 2px solid rebeccapurple !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+}
+
+.square:hover {
+  background-color: yellow !important;
+}
