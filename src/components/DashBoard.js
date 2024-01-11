@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import Board from "./Board";
@@ -37,30 +39,59 @@ const DashBoard = () => {
 
   const winner = calculateWinner(current.squares);
 
+  const calculateMove = (squares, availableMoves) => {
+    for (let i = 0; i < availableMoves.length; i++) {
+      const testMove = availableMoves[i];
+      const testSquares = squares.slice();
+      testSquares[testMove] = "O";
+      if (calculateWinner(testSquares) === "O") {
+        return testMove;
+      }
+    }
+
+    for (let i = 0; i < availableMoves.length; i++) {
+      const testMove = availableMoves[i];
+      const testSquares = squares.slice();
+      testSquares[testMove] = "X";
+      if (calculateWinner(testSquares) === "X") {
+        return testMove;
+      }
+    }
+
+    const diagonalMoves = [0, 2, 6, 8];
+    const availableDiagonalMoves = availableMoves.filter((move) =>
+      diagonalMoves.includes(move)
+    );
+
+    if (availableDiagonalMoves.length > 0) {
+      return availableDiagonalMoves[0];
+    }
+
+    return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+  };
+
   useEffect(() => {
-    if (!xIsNext && !winner) {
+    if (!xIsNext && !winner && stepNumber < 9) {
       const timer = setTimeout(() => {
         const availableMoves = current.squares
           .map((square, index) => (square === null ? index : null))
           .filter((index) => index !== null);
 
-        const randomMove =
-          availableMoves[Math.floor(Math.random() * availableMoves.length)];
+        const systemMove = calculateMove(current.squares, availableMoves);
 
-        if (randomMove !== undefined) {
+        if (systemMove !== undefined) {
           const newHistory = history.slice(0, stepNumber + 1);
           const currentSquares = current.squares.slice();
-          currentSquares[randomMove] = 'O';
+          currentSquares[systemMove] = "O";
 
           setHistory(newHistory.concat([{ squares: currentSquares }]));
           setStepNumber(newHistory.length);
         }
-      }, 500); 
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [xIsNext, winner, history, current.squares, stepNumber]);
 
- 
   const handleClick = (i) => {
     const newHistory = history.slice(0, stepNumber + 1);
     const currentSquares = current.squares.slice();
@@ -69,7 +100,7 @@ const DashBoard = () => {
       return;
     }
 
-    currentSquares[i] = xIsNext ? 'X' : 'O';
+    currentSquares[i] = xIsNext ? "X" : "O";
     setHistory(newHistory.concat([{ squares: currentSquares }]));
     setStepNumber(newHistory.length);
   };
@@ -78,20 +109,22 @@ const DashBoard = () => {
     setHistory(initialHistory);
     setStepNumber(0);
   };
-  
+
   const status = winner
-  ? `Winner: ${winner}`
-  : `Next player: ${xIsNext ? 'X' : 'O'}`;
+    ? `Winner: ${winner}`
+    : stepNumber === 9
+    ? "It's a draw!"
+    : `Next player: ${xIsNext ? "X" : "O"}`;
 
   return (
-    <Card border="primary" className="text-center" style={{ width: "28rem" }}>
+    <Card border='primary' className='text-center' style={{ width: "28rem" }}>
       <Card.Body>
-        <Card.Header as="h2">Lets Play Tic-Tac-Toe</Card.Header>
-        <Card.Header as="h5">{status}</Card.Header>
-        <div className="dash-board-body">
+        <Card.Header as='h2'>Lets Play Tic-Tac-Toe</Card.Header>
+        <Card.Header as='h5'>{status}</Card.Header>
+        <div className='dash-board-body'>
           <Board squares={current.squares} onClick={handleClick} />
         </div>
-        <Button onClick={resetGame} variant="primary">
+        <Button onClick={resetGame} variant='primary'>
           Restart Game
         </Button>
       </Card.Body>
