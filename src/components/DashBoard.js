@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import Board from "./Board";
 import "../App.css";
 
 const DashBoard = () => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [player, setPlayer] = useState(true);
+  const initialHistory = [{ squares: Array(9).fill(null) }];
+  const [history, setHistory] = useState(initialHistory);
+  const [stepNumber, setStepNumber] = useState(0);
+  const xIsNext = stepNumber % 2 === 0;
+  const current = history[stepNumber];
 
   const calculateWinner = (squares) => {
     const lines = [
@@ -32,26 +35,53 @@ const DashBoard = () => {
     return null;
   };
 
-  const winner = calculateWinner(squares);
+  const winner = calculateWinner(current.squares);
+
+  useEffect(() => {
+    if (!xIsNext && !winner) {
+      const timer = setTimeout(() => {
+        const availableMoves = current.squares
+          .map((square, index) => (square === null ? index : null))
+          .filter((index) => index !== null);
+
+        const randomMove =
+          availableMoves[Math.floor(Math.random() * availableMoves.length)];
+
+        if (randomMove !== undefined) {
+          const newHistory = history.slice(0, stepNumber + 1);
+          const currentSquares = current.squares.slice();
+          currentSquares[randomMove] = 'O';
+
+          setHistory(newHistory.concat([{ squares: currentSquares }]));
+          setStepNumber(newHistory.length);
+        }
+      }, 500); 
+      return () => clearTimeout(timer);
+    }
+  }, [xIsNext, winner, history, current.squares, stepNumber]);
+
+ 
   const handleClick = (i) => {
-    if (winner || squares[i]) {
+    const newHistory = history.slice(0, stepNumber + 1);
+    const currentSquares = current.squares.slice();
+
+    if (winner || currentSquares[i]) {
       return;
     }
-    const newSquares = squares.slice();
-    newSquares[i] = player ? "X" : "O";
-    setSquares(newSquares);
-    setPlayer(!player);
+
+    currentSquares[i] = xIsNext ? 'X' : 'O';
+    setHistory(newHistory.concat([{ squares: currentSquares }]));
+    setStepNumber(newHistory.length);
   };
 
   const resetGame = () => {
-    setSquares(Array(9).fill(null));
-    setPlayer(true);
+    setHistory(initialHistory);
+    setStepNumber(0);
   };
+  
   const status = winner
-    ? `Winner is : ${winner}`
-    : squares.every((square) => square !== null)
-    ? "Draw !"
-    : `Player : ${player ? "X" : "O"}`;
+  ? `Winner: ${winner}`
+  : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
   return (
     <Card border="primary" className="text-center" style={{ width: "28rem" }}>
@@ -59,7 +89,7 @@ const DashBoard = () => {
         <Card.Header as="h2">Lets Play Tic-Tac-Toe</Card.Header>
         <Card.Header as="h5">{status}</Card.Header>
         <div className="dash-board-body">
-          <Board squares={squares} onClick={handleClick} />
+          <Board squares={current.squares} onClick={handleClick} />
         </div>
         <Button onClick={resetGame} variant="primary">
           Restart Game
