@@ -1,8 +1,11 @@
 # Tic-Tac-Toe Applicaton
 
 Tech-Owner- Shruthi BR
+
 -- Stack - React (Functional Component + Hooks)
+
 -- Styling - CSS + Bootstrap
+
 
 # Apllication Details
 
@@ -24,7 +27,9 @@ Make sure have [Node.js] and [npm] installed on local machine.
   git clone https://github.com/Shruthibr31/Tic-Tac-Toe-Task.git
 
 cd Tic-Tac-Toe-Task
+
 npm install
+
 npm start
 
 
@@ -51,8 +56,13 @@ User can restart the game at any time by clicking the "Restart Game" button.
 The project is organized with the following folder structure:
 
 src/
+
 components/
+
 Board.js: React component for rendering the game board.
+
 Tile.js: React component for rendering individual squares.
+
 DashBoard.js: React component managing the game state, player moves, and system intelligence.
+
 App.js: Main React component rendering the game.
